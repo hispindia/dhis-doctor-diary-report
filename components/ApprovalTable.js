@@ -38,8 +38,10 @@ export function ApprovalTable(props){
     
     function getHeader(){
         var list = [];
-        list.push(<th className="approval_wide" key="h_name of specilist">Name of Specialist</th>);
-        list.push(<th className="approval_wideX"  key="h_ou">Org Unit</th>);
+        list.push(<th className="approval_wideX"  key="h_ou">Org Unit</th>);        
+        list.push(<th className="approval_wide" key="h_name of specilist">Name of Specialist</th>);        
+        list.push(<th className="approval_normal"  key="h_code">Employee Code</th>);
+        
         list.push(<th className="approval_normal"  key="h_working">Working</th>);
         list.push(<th className="approval_normal"  key="h_leave">Leave</th>);
         list.push(<th className="approval_normal"  key="h_offday">Off Day</th>);
@@ -70,8 +72,9 @@ export function ApprovalTable(props){
             },[]);
 
             var _list = [];
-            _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
             _list.push(<td className="approval_wideX" key="d_ou">{makeFacilityStrBelowLevel(ouMap[data.ouuid],2)}</td>);
+            _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
+            _list.push(<td className="approval_normal" key="d_erhms code">{attrMap["T6eQvMXe3MO"]}</td>);
 
             _list.push(<td className="approval_normal" key="d_working">{dvMap["Working"]}</td>);
             _list.push(<td className="approval_normal" key="d_leave">{dvMap["Leave"]}</td>);
@@ -118,13 +121,12 @@ export function ApprovalTable(props){
                 <table className="approvalTable" id="table-to-xls">
                 <thead>
                 <tr>
-                <th colSpan="2">{state.selectedOU.name}</th>
-                <th colSpan={selectedStage.programStageDataElements.length+1}>{state.sdate} -  {state.edate}</th>
+                <th colSpan="1">{state.selectedOU.name}</th>
+                <th colSpan={selectedStage.programStageDataElements.length+2}>{state.sdate} -  {state.edate}</th>
 
             </tr>
-                <tr>
-                
-                <th colSpan={  selectedStage.programStageDataElements.length+1 + 3}>{selectedStage.name}</th>
+                <tr>                
+                <th colSpan={  selectedStage.programStageDataElements.length+1 + 3}>{selectedStage.description}</th>
                 </tr>
                 <tr>
                 {getHeader()}
