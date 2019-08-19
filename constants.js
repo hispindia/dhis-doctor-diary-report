@@ -86,8 +86,12 @@ tedv.value,count(tedv.value)
 on teav.trackedentityinstanceid = tedv.tei
 inner join trackedentityattribute tea on tea.trackedentityattributeid = teav.trackedentityattributeid
 inner join organisationunit ou on ou.organisationunitid = tedv.organisationunitid
-group by tedv.tei
-order by tei
+inner join organisationunit block on ou.parentid = block.organisationunitid
+inner join organisationunit district on block.parentid = district.organisationunitid
+inner join organisationunit division on district.parentid = division.organisationunitid
+
+group by tedv.tei,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
+order by division.name,district.name,block.name,ou.name
 
 `
 
