@@ -33,7 +33,7 @@ window.onload = function(){
     
     var Pprogram = apiWrapper.getObj(`programs\\${constants.program_doc_diary}?fields=id,name,programStages[id,name,description,programStageDataElements[id,name,sortOrder,displayInReports,dataElement[id,name,formName,displayName,valueType,shortname,optionSet[id,name,code,options[id,name,code]]]]]`)
     var Pme = apiWrapper.getObj(`me.json?fields=id,name,displayName,organisationUnits[id,name],userGroups[id,name,code]`);
-    var Pdes = apiWrapper.getObj(`dataElements?fields=id,formName,attributeValues[*,attribute[id,name,code]]&paging=false&filter=attributeValues.attribute.id:eq:BT8ynbxRJHk`);
+    var Pdes = apiWrapper.getObj(`dataElements?fields=id,formName,attributeValues[*,attribute[id,name,code]]&paging=false&filter=attributeValues.attribute.id:eq:${constants.de_sort_order_attribute}&order=attributeValues.value`);
     
     Promise.all([Pprogram,Pme,Pdes]).then(function(values){
         

@@ -16,42 +16,33 @@ export function ApprovalTable(props){
         sdate : props.sdate,
         edate:props.edate,
         selectedOU:props.selectedOU,
-        selectedSpeciality : props.selectedSpeciality,
-        ous : props.ous
+        ous : props.ous,
+        des : props.des
     };
-
-    var programStageMap = state.program.programStages.reduce(function(map,obj){
-        map[obj.id] = obj;
-        return map;
-    },[]);
-
 
     var ouMap = state.ous.reduce(function(map,obj){
         map[obj.id] = obj;
         return map;
     },[]);
-    
-    var selectedStage = programStageMap[state.selectedSpeciality];
-    
+        
     instance.render = render;
     return instance;
     
     function getHeader(){
         var list = [];
+        list.push(<th className="approval_normal"  key="h_speciality">Speciality</th>);        
         list.push(<th className="approval_wideX"  key="h_ou">Org Unit</th>);        
         list.push(<th className="approval_wide" key="h_name of specilist">Name of Specialist</th>);        
         list.push(<th className="approval_normal"  key="h_code">Employee Code</th>);
         
         list.push(<th className="approval_normal"  key="h_working">Working</th>);
+        /*
         list.push(<th className="approval_normal"  key="h_leave">Leave</th>);
         list.push(<th className="approval_normal"  key="h_offday">Off Day</th>);
-        
-        selectedStage.
-            programStageDataElements.
+        */
+        state.des.
             reduce(function(list,obj){
-                if (obj.displayInReports){
-                    list.push(<th className={obj.valueType != "TEXT"?"approval_nonText":""} key={obj.id}>{obj.dataElement.formName}</th>)
-                }
+                list.push(<th className={obj.valueType != "TEXT"?"approval_nonText":""} key={obj.id}>{obj.formName}</th>)
                 return list;
             },list);
 
@@ -72,20 +63,18 @@ export function ApprovalTable(props){
             },[]);
 
             var _list = [];
+            _list.push(<td className="approval_normal" key="d_speciality">{data.speciality}</td>);
+
             _list.push(<td className="approval_wideX" key="d_ou">{makeFacilityStrBelowLevel(ouMap[data.ouuid],2)}</td>);
             _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
             _list.push(<td className="approval_normal" key="d_erhms code">{attrMap["T6eQvMXe3MO"]}</td>);
 
             _list.push(<td className="approval_normal" key="d_working">{dvMap["Working"]}</td>);
-            _list.push(<td className="approval_normal" key="d_leave">{dvMap["Leave"]}</td>);
+      /*      _list.push(<td className="approval_normal" key="d_leave">{dvMap["Leave"]}</td>);
             _list.push(<td className="approval_normal" key="d_offday">{dvMap["Off day"]}</td>);
-
-            selectedStage.
-                programStageDataElements.
-                reduce(function(_list,obj){
-                    if (obj.displayInReports){
-                        _list.push(<td className={obj.valueType != "TEXT"?"approval_nonText":""}  key={"d"+obj.id+data.tei}>{dvMap[obj.dataElement.id]}</td>)
-                    }
+      */
+            state.des.reduce(function(_list,obj){
+                _list.push(<td className={obj.valueType != "TEXT"?"approval_nonText":""}  key={"d"+obj.id+data.tei}>{dvMap[obj.id]}</td>)
                     return _list;
                 },_list);
 
@@ -113,7 +102,7 @@ export function ApprovalTable(props){
             id="test-table-xls-button"
             className="download-table-xls-button"
             table="table-to-xls"
-            filename={"DD_"+state.selectedOU.name+"_"+selectedStage.name+"_"+state.sdate+"-"+state.edate}
+            filename={"DD_MasterData_"+state.selectedOU.name+"_"+state.sdate+"-"+state.edate}
             sheet="1"
             buttonText="Download"/>
 
@@ -121,13 +110,11 @@ export function ApprovalTable(props){
                 <table className="approvalTable" id="table-to-xls">
                 <thead>
                 <tr>
-                <th colSpan="1">{state.selectedOU.name}</th>
-                <th colSpan={selectedStage.programStageDataElements.length+2}>{state.sdate} -  {state.edate}</th>
+                <th colSpan="2">{state.selectedOU.name}</th>
+                <th colSpan={state.des.length+4}>{state.sdate} -  {state.edate}</th>
 
             </tr>
-                <tr>                
-                <th colSpan={  selectedStage.programStageDataElements.length+1 + 3}>{selectedStage.description}</th>
-                </tr>
+              
                 <tr>
                 {getHeader()}
             </tr>
