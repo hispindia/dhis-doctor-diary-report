@@ -8,7 +8,7 @@ export function ApprovalI(props){
     
     var instance = Object.create(React.Component.prototype);
     instance.props = props;
-    
+debugger    
     var state = {
 
         program : props.data.program,
