@@ -39,8 +39,7 @@ exports.report_types = {
 exports.approval_status_de = "W3RxC0UOsGY";
 exports.approval_rejection_reason_de = "CCNnr8s3rgE";
 
-exports.de_sort_order_attribute="ONevn2Oo6kk";
-exports.raw_sort_order = []
+exports.de_sort_order_attribute="FB2lVmfRZ83";
 
 exports.query_ddReport = function(ou,sdate,edate){
 
