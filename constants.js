@@ -96,21 +96,28 @@ right join trackedentityattributevalue teav on pi.trackedentityinstanceid = teav
 inner join trackedentityattribute tea on tea.trackedentityattributeid = teav.trackedentityattributeid
 inner join organisationunit ou on ou.organisationunitid = pi.organisationunitid
 left join organisationunit psiou on psiou.organisationunitid = tedv.organisationunitid
-inner join organisationunit block on ou.parentid = block.organisationunitid
-inner join organisationunit district on block.parentid = district.organisationunitid
-inner join organisationunit division on district.parentid = division.organisationunitid
-where pi.trackedentityinstanceid in (
-					select teav.trackedentityinstanceid
-					from programstageusergroupaccesses psuga
-					inner join usergroupaccess uga on uga.usergroupaccessid = psuga.usergroupaccessid
-					inner join usergroup ug on ug.usergroupid = uga.usergroupid
-					inner join usergroupmembers ugm on ugm.usergroupid = ug.usergroupid
-					inner join users u on u.userid = ugm.userid
-					inner join trackedentityattributevalue teav on teav.value = u.username
-					where psuga.programid in (select programstageid 
-											from programstage 
-											where uid = '${ps}')
-					group by u.username,teav.trackedentityinstanceid)
+left join organisationunit block on ou.parentid = block.organisationunitid
+left join organisationunit district on block.parentid = district.organisationunitid
+left join organisationunit division on district.parentid = division.organisationunitid
+inner join 
+(
+	select distinct teav.trackedentityinstanceid,ps.name as speciality
+	from programstageusergroupaccesses psuga
+	inner join programstage ps on ps.programstageid = psuga.programid
+	inner join usergroupaccess uga on uga.usergroupaccessid = psuga.usergroupaccessid
+	inner join usergroup ug on ug.usergroupid = uga.usergroupid
+	inner join usergroupmembers ugm on ugm.usergroupid = ug.usergroupid
+	inner join users u on u.userid = ugm.userid
+	inner join trackedentityattributevalue teav on teav.value = u.username
+	where psuga.programid in (select programstageid 
+				from programstage 
+				where uid = '${ps}' 	)
+	group by u.username,teav.trackedentityinstanceid,ps.name
+)filteredusers
+on filteredusers.trackedentityinstanceid = pi.trackedentityinstanceid
+inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.trackedentityinstanceid
+inner join trackedentitytype tet on tei.trackedentitytypeid = tet.trackedentitytypeid
+where tet.uid = 'lI7LKVfon5c'
 group by pi.trackedentityinstanceid,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
 order by division.name,district.name,block.name,ou.name
 

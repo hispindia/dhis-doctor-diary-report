@@ -190,7 +190,7 @@ export function ApprovalI(props){
         
         return ( 
                 <div>
-                <h3> Doc Diary Reports  </h3>
+                <h3> Doc Diary Reports - Routine  </h3>
                 
                 <table className="formX">
                 <tbody>
