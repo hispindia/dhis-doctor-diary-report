@@ -78,7 +78,7 @@ export function ApprovalTable(props){
                     return _list;
                 },_list);
 
-            list.push([<tr key={data.tei}>{_list}</tr>]);
+            list.push([<tr className={attrMap[constants.attr_releiving_date]?'relieved_doctor':''} key={data.tei}>{_list}</tr>]);
             return list;
         },[]);
        
