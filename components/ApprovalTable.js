@@ -72,7 +72,7 @@ export function ApprovalTable(props){
             },[]);
 
             var _list = [];
-            _list.push(<td className="approval_wideX" key="d_ou">{makeFacilityStrBelowLevel(ouMap[data.ouuid],2)}</td>);
+            _list.push(<td className="approval_wideX" key="d_ou">{getFacilityNameWithHierarchy(data)}</td>);
             _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
             _list.push(<td className="approval_normal" key="d_erhms code">{attrMap["T6eQvMXe3MO"]}</td>);
 
@@ -89,12 +89,19 @@ export function ApprovalTable(props){
                     return _list;
                 },_list);
 
-            list.push([<tr key={data.tei}>{_list}</tr>]);
+            list.push([<tr className={attrMap[constants.attr_releiving_date]?'relieved_doctor':''} key={data.tei}>{_list}</tr>]);
             return list;
         },[]);
        
     }
-    
+
+    function getFacilityNameWithHierarchy(data){
+        if (data.psiouuid){
+            return data.division + "/" + data.district +"/" + data.block + "/" + data.facility;
+        }
+        
+        return makeFacilityStrBelowLevel(ouMap[data.ouuid],2)
+    }
     function makeFacilityStrBelowLevel(ou,level){        
         return ou.ancestors.reduce(function(str,obj){
             if(obj.level>level){

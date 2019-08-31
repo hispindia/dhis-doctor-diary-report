@@ -38,16 +38,24 @@ exports.report_types = {
 
 exports.approval_status_de = "W3RxC0UOsGY";
 exports.approval_rejection_reason_de = "CCNnr8s3rgE";
+
+exports.attr_releiving_date = "mE6SY3ro53v";
 exports.query_ddReport = function(ps,ou,sdate,edate){
 
     return `
+            
 select 
-tei,
+pi.trackedentityinstanceid,
+max(psiou.uid) as psiouuid,
 max(ou.uid) as ouuid,
+max(ou.name) as facility,
+max(block.name) as block,
+max(district.name) as district,
+max(division.name) as division,
 array_agg(distinct concat(tea.uid,':',teav.value)) as attrlist,
 array_agg(distinct concat(de,':',devalue)) as delist
-from trackedentityattributevalue teav
-inner join (
+from programinstance pi
+left join (
 	select tei.organisationunitid,pi.trackedentityinstanceid as tei,de.uid as de,sum(tedv.value::float8) as devalue
 	from programstageinstance psi
 	inner join programinstance pi on pi.programinstanceid = psi.programinstanceid
@@ -73,7 +81,7 @@ tedv.value,count(tedv.value)
 	inner join trackedentitydatavalue tedv on tedv.programstageinstanceid = psi.programstageinstanceid
 	inner join dataelement de on de.dataelementid = tedv.dataelementid
 	inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.trackedentityinstanceid
-	where psi.executiondate between '${sdate}' and '${edate}'
+	and psi.executiondate between '${sdate}' and '${edate}'
 	and de.uid in ('x2uDVEGfY4K')
 	and psi.programstageid in (select programstageid 
 								from programstage 
@@ -83,15 +91,29 @@ tedv.value,count(tedv.value)
 									where path like '%${ou}%')
 	group by pi.trackedentityinstanceid,de.uid,tei.organisationunitid,tedv.value
 )tedv
-on teav.trackedentityinstanceid = tedv.tei
+on pi.trackedentityinstanceid = tedv.tei
+right join trackedentityattributevalue teav on pi.trackedentityinstanceid = teav.trackedentityinstanceid
 inner join trackedentityattribute tea on tea.trackedentityattributeid = teav.trackedentityattributeid
-inner join organisationunit ou on ou.organisationunitid = tedv.organisationunitid
+inner join organisationunit ou on ou.organisationunitid = pi.organisationunitid
+left join organisationunit psiou on psiou.organisationunitid = tedv.organisationunitid
 inner join organisationunit block on ou.parentid = block.organisationunitid
 inner join organisationunit district on block.parentid = district.organisationunitid
 inner join organisationunit division on district.parentid = division.organisationunitid
-
-group by tedv.tei,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
+where pi.trackedentityinstanceid in (
+					select teav.trackedentityinstanceid
+					from programstageusergroupaccesses psuga
+					inner join usergroupaccess uga on uga.usergroupaccessid = psuga.usergroupaccessid
+					inner join usergroup ug on ug.usergroupid = uga.usergroupid
+					inner join usergroupmembers ugm on ugm.usergroupid = ug.usergroupid
+					inner join users u on u.userid = ugm.userid
+					inner join trackedentityattributevalue teav on teav.value = u.username
+					where psuga.programid in (select programstageid 
+											from programstage 
+											where uid = '${ps}')
+					group by u.username,teav.trackedentityinstanceid)
+group by pi.trackedentityinstanceid,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
 order by division.name,district.name,block.name,ou.name
+
 
 `
 
