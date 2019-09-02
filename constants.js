@@ -133,6 +133,7 @@ on filteredusers.trackedentityinstanceid = pi.trackedentityinstanceid
 inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.trackedentityinstanceid
 inner join trackedentitytype tet on tei.trackedentitytypeid = tet.trackedentitytypeid
 where tet.uid = 'lI7LKVfon5c'
+and pi.programid in (select programid from program where uid='Bv3DaiOd5Ai')
 group by pi.trackedentityinstanceid,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
 order by speciality,division.name,district.name,block.name,ou.name
 
