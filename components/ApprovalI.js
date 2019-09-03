@@ -109,6 +109,9 @@ export function ApprovalI(props){
                 return;
             }
             state.rawData = JSON.parse(body.listGrid.rows[0][0].value);
+            state.loading=false;
+            instance.setState(state);
+            /*
             getOUWithHierarchy(function(error,response,body){
                 if (error){
                     alert("An unexpected error happenned. Please check your network connection and try again.");
@@ -120,6 +123,7 @@ export function ApprovalI(props){
                 instance.setState(state);            
                 
             });
+            */
         }
         
         function makeQuery(){

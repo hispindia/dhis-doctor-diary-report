@@ -50,6 +50,10 @@ select
 pi.trackedentityinstanceid,
 max(filteredusers.speciality) as speciality,
 max(psiou.uid) as psiouuid,
+max(psiou.name) as facility2,
+max(block2.name) as block2,
+max(district2.name) as district2,
+max(division2.name) as division2,
 max(ps.name) as psispeciality,
 max(ou.uid) as ouuid,
 max(ou.name) as facility,
@@ -111,6 +115,11 @@ left join organisationunit psiou on psiou.organisationunitid = tedv.organisation
 left join organisationunit block on ou.parentid = block.organisationunitid
 left join organisationunit district on block.parentid = district.organisationunitid
 left join organisationunit division on district.parentid = division.organisationunitid
+
+left join organisationunit block2 on psiou.parentid = block2.organisationunitid
+left join organisationunit district2 on block2.parentid = district2.organisationunitid
+left join organisationunit division2 on district2.parentid = division2.organisationunitid
+
 inner join 
 (
 	select distinct teav.trackedentityinstanceid,ps.name as speciality
