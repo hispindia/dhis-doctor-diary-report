@@ -143,6 +143,9 @@ inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.tracked
 inner join trackedentitytype tet on tei.trackedentitytypeid = tet.trackedentitytypeid
 where tet.uid = 'lI7LKVfon5c'
 and pi.programid in (select programid from program where uid='Bv3DaiOd5Ai')
+and pi.organisationunitid in (select organisationunitid 
+				from organisationunit 
+				where path like '%${ou}%')
 group by pi.trackedentityinstanceid,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
 order by speciality,division.name,district.name,block.name,ou.name
 
