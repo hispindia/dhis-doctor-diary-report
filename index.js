@@ -21,12 +21,14 @@ window.onload = function(){
 /********/
 
 
+    var org;
     var select = {}
     select.selected = function(callback){
+
         debugger
     }
       
-    ReactDOM.render(<TreeComponent  onSelectCallback={select}/>, document.getElementById('treeComponent'));
+    ReactDOM.render(<TreeComponent  previousSelected={0} onSelectCallback={select} loading={0}/>, document.getElementById('treeComponent'));
 
 
     var apiWrapper = new api.wrapper();
@@ -36,7 +38,7 @@ window.onload = function(){
     
     
     Promise.all([Pprogram,Pme]).then(function(values){
-        
+        org = values[1].organisationUnits[0]
         ReactDOM.render(<ApprovalI data ={
             {
                 program : values[0],

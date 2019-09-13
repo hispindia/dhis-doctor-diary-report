@@ -118,14 +118,14 @@ export function ApprovalTable(props){
 
                 <ReactHTMLTableToExcel
             id="test-table-xls-button"
-            className="download-table-xls-button"
+            className=""
             table="table-to-xls"
             filename={"DD_"+state.selectedOU.name+"_"+selectedStage.name+"_"+state.sdate+"-"+state.edate}
             sheet="1"
             buttonText="Download"/>
 
             
-                <table className="approvalTable" id="table-to-xls">
+                <table className="approvalTable report" id="table-to-xls">
                 <thead>
                 <tr>
                 <th colSpan="1">{state.selectedOU.name}</th>

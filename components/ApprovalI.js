@@ -8,12 +8,16 @@ export function ApprovalI(props){
     
     var instance = Object.create(React.Component.prototype);
     instance.props = props;
-    
+
+    var orgUnit;
+
+    orgUnit = props.data.user.organisationUnits[0]
+
     var state = {
 
         program : props.data.program,
         user : props.data.user,
-        selectedOU : {name : ""},
+        selectedOU : props.data.user.organisationUnits[0],
         orgUnitValidation : "",
         specialityValidation : "",
         ouMode : "DESCENDANTS",
@@ -53,7 +57,14 @@ export function ApprovalI(props){
 
     function onEndDateChange(e){
         state.edate = e.target.value;
-        instance.setState(state);
+        if ((Date.parse(state.sdate) >= Date.parse(state.edate))) {
+            alert("End date should be greater than Start date");
+        }
+        else
+        {
+            instance.setState(state);
+        }
+
     }
 
     function onTypeChange(e){
@@ -72,6 +83,10 @@ export function ApprovalI(props){
         if (state.selectedSpeciality == "-1"){
             state.specialityValidation = "Please select Speciality"
             instance.setState(state);
+            return false;
+        }
+        if ((Date.parse(state.sdate) >= Date.parse(state.edate))) {
+            alert("End date should be greater than Start date");
             return false;
         }
         
@@ -190,20 +205,21 @@ export function ApprovalI(props){
         
         return ( 
                 <div>
+                    <div className="card">
                 <h3> Doc Diary Reports - Routine  </h3>
                 
                 <table className="formX">
                 <tbody>
                 <tr>
-                <td>  Select Speciality<span style={{"color":"red"}}> * </span> : </td><td><select  value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">{getSpeciality(props.data.program)}</select><br></br> <label key="specialityValidation" ><i>{state.specialityValidation}</i></label>
+                <td>  Select Speciality<span style={{"color":"red"}}> * </span> : </td><td><select  title='User Speciality in Doctor Diary' value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">{getSpeciality(props.data.program)}</select><br></br> <label key="specialityValidation" ><i>{state.specialityValidation}</i></label>
                 </td>
-                <td className="leftM">  Selected Facility<span style={{"color":"red"}}> * </span>  : </td><td><input disabled  value={state.selectedOU.name}></input><br></br><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label></td>
+                <td className="leftM">  Selected Facility<span style={{"color":"red"}}> * </span>  : </td><td><input disabled title='Facility Name' value={state.selectedOU.name}></input><br></br><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label></td>
                 
             </tr>
                 <tr>
-                <td> Select Start Period<span style={{"color":"red"}}> * </span>  :  </td><td><input type="date" value={state.sdate} onChange = {onStartDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
+                <td> Select Start Period<span style={{"color":"red"}}> * </span>  :  </td><td><input type="date" title='Start Date between Date of Selection' value={state.sdate} onChange = {onStartDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
                 </td>
-                <td className="leftM" > Select End Period<span style={{"color":"red"}}> * </span>  : </td><td><input type="date" value={state.edate} onChange = {onEndDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
+                <td className="leftM" > Select End Period<span style={{"color":"red"}}> * </span>  : </td><td><input type="date" title='End Date between Date of Selection' value={state.edate} onChange = {onEndDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
                 </td>
                 <td></td>
                 </tr>
@@ -213,7 +229,7 @@ export function ApprovalI(props){
                 <td> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>  </td></tr>
 
             </tbody>                
-                </table>
+                </table></div>
                 {
                     getApprovalTable()
                 }
