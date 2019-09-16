@@ -208,26 +208,40 @@ export function ApprovalI(props){
                     <div className="card">
                 <h3> Doc Diary Reports - Routine  </h3>
                 
-                <table className="formX">
+                <table>
                 <tbody>
-                <tr>
-                <td>  Select Speciality<span style={{"color":"red"}}> * </span> : </td><td><select  title='User Speciality in Doctor Diary' value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">{getSpeciality(props.data.program)}</select><br></br> <label key="specialityValidation" ><i>{state.specialityValidation}</i></label>
+                <tr className="row">
+                <td className="col-sm-6">  Select Speciality<span style={{"color":"red"}}> * </span> :
+                    <select  className="form-control" title='User Speciality in Doctor Diary' value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">{getSpeciality(props.data.program)}</select>
+                    <label key="specialityValidation" className="red"><i>{state.specialityValidation}</i></label>
                 </td>
-                <td className="leftM">  Selected Facility<span style={{"color":"red"}}> * </span>  : </td><td><input disabled title='Facility Name' value={state.selectedOU.name}></input><br></br><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label></td>
+                <td className="col-sm-6">  Selected Facility<span style={{"color":"red"}}> * </span>  :
+                 <input className="form-control" disabled title='Facility Name' value={state.selectedOU.name}></input><br></br>
+                    <label key="orgUnitValidation" className="red"><i>{state.orgUnitValidation}</i></label>
+                </td>
                 
             </tr>
-                <tr>
-                <td> Select Start Period<span style={{"color":"red"}}> * </span>  :  </td><td><input type="date" title='Start Date between Date of Selection' value={state.sdate} onChange = {onStartDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
+                <tr className="row">
+                <td className="col-sm-6"> Select Start Period<span style={{"color":"red"}}> * </span>  :
+                    <input className="form-control" type="date" title='Start Date between Date of Selection' value={state.sdate} onChange = {onStartDateChange} ></input>
+                    <label key="startPeValidation" className="red"><i>{}</i></label>
                 </td>
-                <td className="leftM" > Select End Period<span style={{"color":"red"}}> * </span>  : </td><td><input type="date" title='End Date between Date of Selection' value={state.edate} onChange = {onEndDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
+                <td className="col-sm-6"> Select End Period<span style={{"color":"red"}}> * </span>  :
+                    <input className="form-control" type="date" title='End Date between Date of Selection' value={state.edate} onChange = {onEndDateChange} ></input>
+                    <label key="startPeValidation" className="red" ><i>{}</i></label>
                 </td>
-                <td></td>
                 </tr>
-              
-                <tr></tr><tr></tr>
-                <tr><td>  <input type="submit" value="Submit" onClick={getData} ></input></td>
-                <td> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>  </td></tr>
+                <tr className="row">
+                    <td colSpan="2" className="col-sm-8"><br/></td>
+                </tr>
 
+                <tr className="row">
+                    <td className="col-sm-6">  <input className= "btn btn-primary" type="submit" value="Submit" onClick={getData} ></input></td>
+                <td className="col-sm-6"> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>
+                </td></tr>
+                <tr className="row">
+                    <td colSpan="2" className="col-sm-8"><br/></td>
+                </tr>
             </tbody>                
                 </table></div>
                 {

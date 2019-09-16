@@ -1,7 +1,8 @@
 .form {
-
-    display:inline-block;
+    width:95%;
     vertical-align: top;
+    padding-left:40px;
+    font-size:12px;
 }
 
 .leftM{
@@ -10,27 +11,19 @@
 
 }
 
-table tr {
-    border-left: 1px solid black;
-}
-
-table td{
-    padding-bottom:20px;
-}
-
-
 
 button {
 
     width : 180px;
 }
 .card{
+    padding-top: 12px;
+    margin-top:7%;
     width: 100%;
-    min-width: 450px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
     border-radius: 5px;
-    background-color: #DFE9EE;
+    background-color: #ECF0F1;
 }
 .formX {
 
@@ -42,16 +35,20 @@ select,input {
     width: 180px;
 
 }
-
 .report {
-    font-family: Arial, Helvetica, sans-serif;
+    table-layout: auto;
+    font-size: 12px;
     border-collapse: collapse;
     width: 100%;
+    overflow-y: scroll;
+    overflow-x: auto;
+    display: block;
+    height: 250px;
 }
-
 .report td, #customers th {
     border: 1px solid #ddd;
     padding: 8px;
+    min-width:100px;
 }
 
 .report tr:nth-child(even){background-color: #f2f2f2;}
@@ -64,6 +61,7 @@ select,input {
     text-align: center;
     background-color: #3397B2;
     color: white;
+    min-width:100px;
 }
 #treeComponent
 {
@@ -82,6 +80,12 @@ select,input {
     border-right: 1px solid #e1e1e1;
     z-index: 10;
 
+}
+h3{
+    padding-top:2px;
+    padding-bottom:5px;
+    padding-left:2%;
+    font-size: 12px;
 }
 
 #main{
@@ -102,12 +106,16 @@ select,input {
 }
 
 .approvalTable{
-    table-layout: auto;
-
-    font-size: 15px;
+    font-size: 12px;
     word-wrap: break-word;
     border-collapse:collapse;
+    width: 100%;
 
+}
+.font-control{
+    padding-left:2px;
+    font-size: 12px;
+    width: 100%;
 }
 .approvalTable td,th{
     border: 1px solid #dddddd;
@@ -125,6 +133,7 @@ select,input {
 }
 
 .approvalButton{
+    font-size: 12px;
     width:60px;
     margin:5px;
 }
@@ -151,4 +160,7 @@ select,input {
 
 .relieved_doctor{
     background-color:lightcoral;
+}
+.red{
+    color: darkred;
 }
