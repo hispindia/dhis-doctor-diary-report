@@ -15,7 +15,7 @@ export function ApprovalI(props){
 
         program : props.data.program,
         user : props.data.user,
-        selectedOU : {name : ""},
+        selectedOU : props.data.user.organisationUnits[0],
         orgUnitValidation : "",
         specialityValidation : "",
         ouMode : "DESCENDANTS",
@@ -56,7 +56,12 @@ export function ApprovalI(props){
 
     function onEndDateChange(e){
         state.edate = e.target.value;
-        instance.setState(state);
+        if ((Date.parse(state.sdate) >= Date.parse(state.edate))) {
+            alert("End date should be greater than Start date");
+        }
+        else{
+            instance.setState(state);
+        }
     }
 
     function onTypeChange(e){
@@ -69,6 +74,10 @@ export function ApprovalI(props){
         if (state.selectedOU.id == undefined){
             state.orgUnitValidation = "Please select Facility from left bar"
             instance.setState(state);
+            return false;
+        }
+        if ((Date.parse(state.sdate) >= Date.parse(state.edate))) {
+            alert("End date should be greater than Start date");
             return false;
         }
 
@@ -178,34 +187,41 @@ export function ApprovalI(props){
         
         return ( 
                 <div>
+                    <div className="card">
                 <h3> Doc Diary Reports - Master </h3>
                 
-                <table className="formX">
+                <table>
                 <tbody>
-                <tr>
+                <tr className="row">
               
-                <td className="">  Selected Facility<span style={{"color":"red"}}> * </span>  : </td><td><input disabled  value={state.selectedOU.name}></input><br></br><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label></td>
-                
-            </tr>
-                <tr>
-                <td> Select Start Period<span style={{"color":"red"}}> * </span>  :  </td><td><input type="date" value={state.sdate} onChange = {onStartDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
+                <td className="col-sm-4">  Selected Facility<span style={{"color":"red"}}> * </span>  :
+                    <input disabled  value={state.selectedOU.name} className='form-control'></input>
+                    <label key="orgUnitValidation" className="red"><i>{state.orgUnitValidation}</i></label>
                 </td>
+                    <td className="col-sm-4"> Select Start Period<span style={{"color":"red"}}> * </span>  :
+                        <input type="date" value={state.sdate} onChange = {onStartDateChange} className='form-control' ></input>
+                        <label key="startPeValidation" className="red" ><i>{}</i></label>
+                    </td>
+                    <td className="col-sm-4"> Select End Period<span style={{"color":"red"}}> * </span>  :
+                        <input type="date" value={state.edate} onChange = {onEndDateChange} className='form-control'></input>
+                        <label key="startPeValidation" className="red"><i>{}</i></label>
+                    </td>
                 </tr>
-              
-                <tr>
-                <td className="" > Select End Period<span style={{"color":"red"}}> * </span>  : </td><td><input type="date" value={state.edate} onChange = {onEndDateChange} ></input><br></br><label key="startPeValidation" ><i>{}</i></label>
-                </td>
+                <tr className="row">
+                    <td colSpan="3" className="col-sm-8"><br/></td>
+                </tr>
 
-            </tr>
+                <tr className="row">
+                 <td className="col-sm-4">  <input type="submit" value="Submit" className='btn btn-primary' onClick={getData} ></input>
+                 </td>
+                <td className="col-sm-4" colSpan='2'> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>
+                </td></tr>
 
-                <tr></tr>
-                <tr></tr>
-
-                <tr><td>  <input type="submit" value="Submit" onClick={getData} ></input></td>
-                <td> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>  </td></tr>
-
+                <tr className="row">
+                    <td colSpan="3" className="col-sm-8"><br/></td>
+                </tr>
             </tbody>                
-                </table>
+                </table></div>
                 {
                     getApprovalTable()
                 }

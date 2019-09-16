@@ -1,34 +1,61 @@
 .form {
-
-    display:inline-block;
+    width:95%;
     vertical-align: top;
+    padding-left:40px;
+    font-size:12px;
 }
-
 .leftM{
 
     padding-left:40px;
 
 }
-
-table tr {
-   border-left: 1px solid black;
+.report {
+    table-layout: auto;
+    font-size: 12px;
+    border-collapse: collapse;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: auto;
+    display: block;
+    height: 350px;
+}
+.report td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    min-width:100px;
 }
 
-table td{
-    padding-bottom:20px;
+.report tr:nth-child(even){background-color: #f2f2f2;}
+
+.report tr:hover {background-color: #ddd;}
+
+.report th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #3397B2;
+    color: white;
+    min-width:100px;
 }
-
-
+.card{
+    padding-top: 12px;
+    margin-top:7%;
+    width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    border-radius: 5px;
+    background-color: #ECF0F1;
+}
 
 button {
 
     width : 180px;
 }
 
-.formX select,input {
+.formX {
 
     width: 180px;
-    
+
 }
 
 #treeComponent
@@ -68,18 +95,23 @@ button {
 }
 
 .approvalTable{
-    table-layout: auto;
-    
-    font-size: 15px;
+    font-size: 12px;
     word-wrap: break-word;
     border-collapse:collapse;
-        
+    width: 100%;
+
 }
 .approvalTable td,th{
     border: 1px solid #dddddd;
     text-align: center;
     margin:0;
     padding:0;
+}
+h3{
+    padding-top:2px;
+    padding-bottom:5px;
+    padding-left:2%;
+    font-size: 12px;
 }
 
 .approvalOperation{
@@ -107,7 +139,10 @@ button {
 .approval_wide{
     width:150px;
 }
-
+.font-control{
+    font-size: 12px;
+    width: 100%;
+}
 .approval_wideX{
     width:250px;
 }
@@ -117,4 +152,7 @@ button {
 
 .relieved_doctor{
     background-color:lightcoral;
+}
+.red{
+    color: darkred;
 }
