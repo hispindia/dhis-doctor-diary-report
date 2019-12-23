@@ -2,7 +2,7 @@
     width:95%;
     vertical-align: top;
     padding-left:40px;
-    font-size:12px;
+    font-size:14px;
 }
 
 .leftM{
@@ -40,8 +40,6 @@ select,input {
     font-size: 12px;
     border-collapse: collapse;
     width: 100%;
-    overflow-y: scroll;
-    overflow-x: auto;
     display: block;
     height: 250px;
 }
@@ -163,4 +161,21 @@ h3{
 }
 .red{
     color: darkred;
+}
+.hidden{
+    display:none;
+}
+.show{
+    display:block;
+}
+.tableBB  {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tableBB td,th {
+    padding: 10px;
+    text-align: left;
+    height: 50px;
+    vertical-align: bottom;
 }

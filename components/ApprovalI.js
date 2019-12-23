@@ -5,16 +5,21 @@ import constants from '../constants';
 import moment from 'moment';
 
 export function ApprovalI(props){
-    
+
     var instance = Object.create(React.Component.prototype);
     instance.props = props;
 
-    var orgUnit;
+    var dailyType = false;
+    var monthlyType = false;
 
-    orgUnit = props.data.user.organisationUnits[0]
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    var selectedMonth = "";
 
     var state = {
-
+        selectedName : "-1",
         program : props.data.program,
         user : props.data.user,
         selectedOU : props.data.user.organisationUnits[0],
@@ -27,21 +32,37 @@ export function ApprovalI(props){
         ous : []
     };
 
-    
+
     props.services.ouSelectCallback.selected = function(ou){
 
         state.selectedOU = ou;
         state.orgUnitValidation = ""
         instance.setState(state);
     }
-    
+
     instance.render = render;
     return instance;
 
     function onSpecialityChange(e){
         state.selectedSpeciality = e.target.value;
-        state.specialityValidation = ""
+        state.specialityValidation = "";
+        state.rawData = null;
+        instance.setState(state);
+    }
+    function  onReportNameChange(e) {
 
+        if(e.target.value === 'bb_date' || e.target.value === 'bb_complete')
+        {
+            dailyType = true;
+            monthlyType = false;
+        }
+        else if(e.target.value === 'bb_month')
+        {
+            dailyType = false;
+            monthlyType = true;
+        }
+        state.selectedName = e.target.value;
+        state.rawData = null;
         instance.setState(state);
     }
 
@@ -64,13 +85,12 @@ export function ApprovalI(props){
         {
             instance.setState(state);
         }
-
     }
 
     function onTypeChange(e){
         state.type = e.target.value;
         instance.setState(state);
-        
+
     }
 
     function validate(){
@@ -89,18 +109,33 @@ export function ApprovalI(props){
             alert("End date should be greater than Start date");
             return false;
         }
-        
+
         return true;
     }
+    function getMonthDate(e)
+    {
+        var monthVal = e.target.value;
+        var d = new Date();
+        var startD;
+        var endD;
 
-    
+        selectedMonth = monthNames[monthVal - 1]
+
+        startD = d.setMonth(monthVal - 1,1);
+        endD = d.setMonth(monthVal ,0);
+
+        state.sdate = moment(startD).format("YYYY-MM-DD");
+        state.edate = moment(endD).format("YYYY-MM-DD");
+
+    }
+
     function getData(e){
 
         // validation
         if (!validate()){
             return;
         }
-        
+
         state.rawData = null;
         state.loading=true;
         instance.setState(state);
@@ -108,11 +143,11 @@ export function ApprovalI(props){
         var Q = makeQuery();
         Q = constants.query_jsonize(Q);
         var sqlViewService = new api.sqlViewService();
-        
+
         console.log(Q)
         sqlViewService.dip("DOC_DIARY_REPORT_",
-                           Q,makeReport);
-        
+            Q,makeReport);
+
         function makeReport(error,response,body){
 
             if (error){
@@ -135,21 +170,55 @@ export function ApprovalI(props){
 
                 state.ous = body.organisationUnits;
                 state.loading=false;
-                instance.setState(state);            
-                
+                instance.setState(state);
+
             });
         }
-        
+
         function makeQuery(){
-            
-            return constants.query_ddReport(state.selectedSpeciality,
-                                            state.selectedOU.id,
-                                            state.sdate,
-                                           state.edate);  
+
+            console.log(state.selectedSpeciality);
+            console.log(state.selectedOU.id);
+            console.log(state.sdate);
+            console.log(state.edate);
+            console.log(state.selectedName);
+
+            var rtVar = "";
+            if(state.selectedName === "bb_complete")
+            {
+                var deid;
+
+                if(state.selectedSpeciality === "Bm7Bc9Bnqoh"){ deid = constants.anaesthesia_detail }
+                else if(state.selectedSpeciality === "Kd8DRRvZDro"){ deid = constants.csection_detail}
+                else if(state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"){deid = constants.anaesthesia_detail+','+constants.csection_detail}
+                rtVar = constants.query_completeReport(state.selectedSpeciality,
+                    state.selectedOU.id,
+                    state.sdate,
+                    state.edate,deid);
+            }
+            else if(state.selectedName === "bb_date")
+            {
+                var deid;
+                if(state.selectedSpeciality === "Bm7Bc9Bnqoh"){ deid = constants.no_of_anaesthesia }
+                else if(state.selectedSpeciality === "Kd8DRRvZDro"){ deid = constants.no_of_csection}
+                else if(state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"){deid = constants.no_of_anaesthesia+','+constants.no_of_csection}
+                rtVar = constants.query_dailyReport(state.selectedSpeciality,
+                    state.selectedOU.id,
+                    state.sdate,
+                    state.edate,deid);
+            }
+            else if(state.selectedName === "bb_month")
+            {
+              rtVar = constants.query_ddReport(state.selectedSpeciality,
+                    state.selectedOU.id,
+                    state.sdate,
+                    state.edate);
+            }
+            return rtVar;
         }
-        
+
         function getOUWithHierarchy(callback){
-            
+
             var ous = state.rawData.reduce(function(list,obj){
                 if (!list.includes(obj.ouuid)){
                     list.push(obj.ouuid)
@@ -157,97 +226,128 @@ export function ApprovalI(props){
                 return list;
             },[]);
 
-            
+
             ous = ous.reduce(function(str,obj){
                 if (!str){
                     str =  "" + obj + ""
                 }else{
                     str = str + "," + obj + ""
                 }
-                
-                return str; 
+
+                return str;
             },null);
 
             var apiWrapper = new api.wrapper();
             var url = `organisationUnits.json?filter=id:in:[${ous}]&fields=id,name,ancestors[id,name,level]&paging=false`;
-            
+
             apiWrapper.getObj(url,callback)
         }
-        
+
     }
-    
-    
-    
-    function render(){        
-        
+
+
+
+    function render(){
+
         function getApprovalTable(){
-            
+
             if(!(state.rawData)){
                 return (<div></div>)
-            }        
-            return (<ApprovalTable key="approvaltable"  rawData={state.rawData} selectedOU={state.selectedOU} sdate={state.sdate} edate={state.edate} program={state.program} user={state.user}  selectedSpeciality={state.selectedSpeciality} ous={state.ous}  />
-                   );
-            
+            }
+            return (<ApprovalTable key="approvaltable"  rawData={state.rawData} month ={selectedMonth} selectedOU={state.selectedOU} sdate={state.sdate} edate={state.edate} program={state.program} user={state.user} selectedName ={state.selectedName}  selectedSpeciality={state.selectedSpeciality} ous={state.ous}  />
+            );
+
         }
-        
-        function getSpeciality(program){
-            
+
+        function getReportName(){
+
             var options = [
-                    <option disabled key="select_speciality" value="-1"> -- Select -- </option>
+                <option disabled key="select_name" value="-1" selected> -- Select -- </option>
             ];
-            
-            program.programStages.forEach(function(ps){
-                options.push(<option key = {ps.id}  value={ps.id} >{ps.name}</option>);
-            });
-            
+
+            options.push(<option  value={"bb_complete"}>Buddy Buddy Complete Report</option>);
+            options.push(<option  value={"bb_month"}>Buddy Buddy Month Wise Report</option>);
+            options.push(<option  value={"bb_date"}>Buddy Buddy Date Wise Report</option>);
+            // options.push(<option  value="staff">Support Staff Report</option>);
+
+
             return options;
         }
-        
-        return ( 
-                <div>
-                    <div className="card">
-                <h3> Doc Diary Reports - Routine  </h3>
-                
-                <table>
-                <tbody>
-                <tr className="row">
-                <td className="col-sm-6">  Select Speciality<span style={{"color":"red"}}> * </span> :
-                    <select  className="form-control" title='User Speciality in Doctor Diary' value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">{getSpeciality(props.data.program)}</select>
-                    <label key="specialityValidation" className="red"><i>{state.specialityValidation}</i></label>
-                </td>
-                <td className="col-sm-6">  Selected Facility<span style={{"color":"red"}}> * </span>  :
-                 <input className="form-control" disabled title='Facility Name' value={state.selectedOU.name}></input><br></br>
-                    <label key="orgUnitValidation" className="red"><i>{state.orgUnitValidation}</i></label>
-                </td>
-                
-            </tr>
-                <tr className="row">
-                <td className="col-sm-6"> Select Start Period<span style={{"color":"red"}}> * </span>  :
-                    <input className="form-control" type="date" title='Start Date between Date of Selection' value={state.sdate} onChange = {onStartDateChange} ></input>
-                    <label key="startPeValidation" className="red"><i>{}</i></label>
-                </td>
-                <td className="col-sm-6"> Select End Period<span style={{"color":"red"}}> * </span>  :
-                    <input className="form-control" type="date" title='End Date between Date of Selection' value={state.edate} onChange = {onEndDateChange} ></input>
-                    <label key="startPeValidation" className="red" ><i>{}</i></label>
-                </td>
-                </tr>
-                <tr className="row">
-                    <td colSpan="2" className="col-sm-8"><br/></td>
-                </tr>
 
-                <tr className="row">
-                    <td className="col-sm-6">  <input className= "btn btn-primary" type="submit" value="Submit" onClick={getData} ></input></td>
-                <td className="col-sm-6"> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>
-                </td></tr>
-                <tr className="row">
-                    <td colSpan="2" className="col-sm-8"><br/></td>
-                </tr>
-            </tbody>                
-                </table></div>
-                {
-                    getApprovalTable()
-                }
-            
+        function getSpeciality(){
+
+            var options = [
+                <option disabled key="select_speciality" value="-1" selected> -- Select -- </option>
+            ];
+
+            options.push(<option  value={"Bm7Bc9Bnqoh"}>LSAS Report</option>);
+            options.push(<option  value={"Kd8DRRvZDro"}>EMOC Report</option>);
+            options.push(<option  value={"Kd8DRRvZDro','Bm7Bc9Bnqoh"}>Both (EMOC/LSAS) Report</option>);
+           // options.push(<option  value="staff">Support Staff Report</option>);
+
+
+            return options;
+        }
+
+        return (
+            <div >
+                <div className="card">
+                <h3> Doc Diary Buddy Buddy Report</h3>
+
+                <table className="tableBB">
+
+                    <tr>
+                        <td>Select Report Name<span style={{"color":"red"}}> * </span> :
+                            <select  value={state.selectedName} onChange={onReportNameChange} id="report_name">
+                                {getReportName()}</select><label  ><i></i></label>
+                        </td>
+                        <td>Select Report Type<span style={{"color":"red"}}> * </span> :
+                            <select  value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">
+                                {getSpeciality()}</select><label key="specialityValidation" ></label>
+                        </td>
+                        <td>Selected Facility<span style={{"color":"red"}}> * </span>  :
+                            <input disabled  value={state.selectedOU.name}></input><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={!monthlyType?'hidden':'show'}>
+                            Select Month <span style={{"color":"red"}}> * </span>  :<select onChange={getMonthDate}>
+                                <option disabled value='-1' selected>--Select--</option>
+                                <option value='1'>JAN</option>
+                                <option value='2'>FEB</option>
+                                <option value='3'>MAR</option>
+                                <option value='4'>APR</option>
+                                <option value='5'>MAY</option>
+                                <option value='6'>JUN</option>
+                                <option value='7'>JULY</option>
+                                <option value='8'>AUG</option>
+                                <option value='9'>SEP</option>
+                                <option value='10'>OCT</option>
+                                <option value='11'>NOV</option>
+                                <option value='12'>DEC</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr className={!dailyType?'hidden':'show'}>
+                        <td>Select Start Period<span style={{"color":"red"}}> * </span> :
+                            <input type="date" value={state.sdate} onChange = {onStartDateChange} ></input>
+                        </td>
+
+                        <td>Select End Period<span style={{"color":"red"}}> * </span>  :
+                            <input type="date" value={state.edate} onChange = {onEndDateChange} ></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>  <input type="submit" value="Generate" onClick={getData} ></input></td>
+                        <td> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>  </td>
+
+                    </tr>
+
+                </table>
+                </div>
+                {getApprovalTable()}
+
             </div>
         )
     }

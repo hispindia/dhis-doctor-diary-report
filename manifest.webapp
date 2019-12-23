@@ -7,12 +7,12 @@
     }
   },
   "appType": "APP",
-  "name": "Doc Diary Reports",
+  "name": "Doc Diary Buddy Buddy Reports",
   "version": "1.0.0",
   "description": "",
   "developer": {
-    "name": "harsh",
-    "email": "harsh.atal@gmail.com"
+    "name": "samta",
+    "email": "samta.bajpayee@gmail.com"
   },
   "icons": {
   "16":"images/ddreport.png",
