@@ -24,24 +24,42 @@ export function ApprovalTable(props){
         map[obj.id] = obj;
         return map;
     },[]);
-        
+
+    state.des = state.des.sort(function(a, b){
+        var a1 ,b1 ;
+        for(var i=0 ;i<=a.attributeValues.length-1 ; i++ ){
+            if(a.attributeValues[i].attribute.id === constants.de_sort_order_attribute){
+                a1 = parseInt(a.attributeValues[i].value);
+            }
+        }
+        for(var j=0 ;j<=b.attributeValues.length-1 ; j++ ){
+            if(b.attributeValues[j].attribute.id === constants.de_sort_order_attribute){
+                b1 = parseInt(b.attributeValues[j].value);
+                //console.log(b1);
+            }
+        }
+        return a1 - b1;
+    });
+
     instance.render = render;
     return instance;
-    
+
+
     function getHeader(){
+
         var list = [];
-        list.push(<th className="approval_normal"  key="h_speciality">Speciality</th>);        
+
         list.push(<th className="approval_wideX"  key="h_ou">Org Unit</th>);        
         list.push(<th className="approval_wide" key="h_name of specilist">Name of Specialist</th>);        
         list.push(<th className="approval_normal"  key="h_code">Employee Code</th>);
-        
+        list.push(<th className="approval_normal"  key="h_speciality">Speciality</th>);
+        list.push(<th className="approval_normal"  key="h_speciality">Contact No</th>);
         list.push(<th className="approval_normal"  key="h_working">Working</th>);
-        /*
-        list.push(<th className="approval_normal"  key="h_leave">Leave</th>);
-        list.push(<th className="approval_normal"  key="h_offday">Off Day</th>);
-        */
+
+        //console.log(state.des);
         state.des.
             reduce(function(list,obj){
+                console.log(obj)
                 list.push(<th className={obj.valueType != "TEXT"?"approval_nonText":""} key={obj.id}>{obj.formName}</th>)
                 return list;
             },list);
@@ -50,8 +68,8 @@ export function ApprovalTable(props){
     }
 
     function getRows(){
-        
         return state.rawData.reduce(function(list,data){
+
             var dvMap = data.delist.reduce(function(map,obj){
                 map[obj.split(":")[0]] = obj.split(":")[1];
                 return map;                
@@ -63,16 +81,16 @@ export function ApprovalTable(props){
             },[]);
 
             var _list = [];
-            _list.push(<td className="approval_normal" key="d_speciality">{data.speciality}</td>);
-
             _list.push(<td className="approval_wideX" key="d_ou">{getFacilityNameWithHierarchy(data)}</td>);
             _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
             _list.push(<td className="approval_normal" key="d_erhms code">{attrMap["T6eQvMXe3MO"]}</td>);
-
+            _list.push(<td className="approval_normal" key="d_speciality">{data.speciality}</td>);
+            _list.push(<td className="approval_normal" key="d_speciality">{attrMap["aXT3MKVuHQR"]}</td>);
             _list.push(<td className="approval_normal" key="d_working">{dvMap["Working"]}</td>);
       /*      _list.push(<td className="approval_normal" key="d_leave">{dvMap["Leave"]}</td>);
             _list.push(<td className="approval_normal" key="d_offday">{dvMap["Off day"]}</td>);
       */
+
             state.des.reduce(function(_list,obj){
                 _list.push(<td className={obj.valueType != "TEXT"?"approval_nonText":""}  key={"d"+obj.id+data.tei}>{dvMap[obj.id]}</td>)
                     return _list;
