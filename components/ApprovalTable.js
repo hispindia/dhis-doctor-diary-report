@@ -114,6 +114,10 @@ export function ApprovalTable(props){
                 list.push(<th className="approval_wideX"  key="h_ou">Staff Nurse 2</th>);
                 list.push(<th className="approval_wideX"  key="h_ou">OT Technician 1</th>);
                 list.push(<th className="approval_wideX"  key="h_ou">OT Technician 2</th>);
+                list.push(<th className="approval_wideX"  key="h_ou">4th Class Staff Nurse 1</th>);
+                list.push(<th className="approval_wideX"  key="h_ou">4th Class Staff Nurse 2</th>);
+                list.push(<th className="approval_wideX"  key="h_ou">4th Class Staff Nurse 3</th>);
+                list.push(<th className="approval_wideX"  key="h_ou">4th Class Staff Nurse 4</th>);
             }
         }
         else if(state.selectedName === "bb_date")
@@ -153,7 +157,7 @@ export function ApprovalTable(props){
 
     function getRows(){
 
-        return state.rawData.reduce(function(list,data,index){
+        return state.rawData.reduce(function(list,data,index) {
 
             console.log(state.selectedName);
             var date_month = new Date(data.execution_date);
@@ -163,7 +167,8 @@ export function ApprovalTable(props){
 
             var _list = [];
             var _mapList = [];
-            if(state.selectedName === "bb_complete" || state.selectedName === "bb_date"){
+
+            if (state.selectedName === "bb_complete" || state.selectedName === "bb_date") {
 
                 _list.push(<td className="approval_normal" key="d_erhms code">{data.ehrmsid}</td>);
                 _list.push(<td className="approval_wide" key="d_name of specilist">{data.name}</td>);
@@ -175,16 +180,25 @@ export function ApprovalTable(props){
                 _list.push(<td className="approval_wideX" key="d_ou">{data.execution_date}</td>);
                 _list.push(<td className="approval_wideX" key="d_ou">{month}</td>);
             }
-            else if(state.selectedName === "bb_month"){
-                var dvMap = data.delist.reduce(function(map,obj){
-                    map[obj.split(":")[0]] = obj.split(":")[1];
-                    return map;
-                },[]);
+            else if (state.selectedName === "bb_month") {
 
-                var attrMap = data.attrlist.reduce(function(map,obj){
+                var dvMap = data.delist.reduce(function (map, obj) {
                     map[obj.split(":")[0]] = obj.split(":")[1];
                     return map;
-                },[]);
+                }, []);
+
+                var attrMap = data.attrlist.reduce(function (map, obj) {
+                    map[obj.split(":")[0]] = obj.split(":")[1];
+                    return map;
+                }, []);
+
+
+                if ((state.selectedSpeciality === 'Kd8DRRvZDro' && attrMap["qXQxtcuPO5S"] == 'emoc')
+                    || (state.selectedSpeciality === 'Bm7Bc9Bnqoh' && attrMap["qXQxtcuPO5S"] == 'LSAS')
+                    || (state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"
+                        && (attrMap["qXQxtcuPO5S"] == 'emoc' || attrMap["qXQxtcuPO5S"] == 'LSAS'))) {
+
+
 
                 _list.push(<td className="approval_normal" key="d_erhms code">{attrMap["T6eQvMXe3MO"]}</td>);
                 _list.push(<td className="approval_wide" key="d_name of specilist">{attrMap["U0jQjrOkFjR"]}</td>);
@@ -195,26 +209,25 @@ export function ApprovalTable(props){
                 _list.push(<td className="approval_wideX" key="d_ou">{data.district}</td>);
                 _list.push(<td className="approval_wideX" key="d_ou">{props.month}</td>);
 
-                selectedStage.
-                programStageDataElements.
-                reduce(function(_list,obj){
+                selectedStage.programStageDataElements.reduce(function (_list, obj) {
                     if (obj.dataElement.id === "zfMOVN2lc1S" || obj.dataElement.id === "wTdcUXWeqhN") {
-                        if(state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"){
+                        if (state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh") {
                             _list.push(<td className={obj.valueType != "TEXT" ? "approval_nonText" : ""}
                                            key={"d" + obj.id + data.tei}>{dvMap["zfMOVN2lc1S"]}</td>);
                             _list.push(<td className={obj.valueType != "TEXT" ? "approval_nonText" : ""}
                                            key={"d" + obj.id + data.tei}>{dvMap["wTdcUXWeqhN"]}</td>);
-                        }
-                        else{
+                        } else {
                             _list.push(<td className={obj.valueType != "TEXT" ? "approval_nonText" : ""}
                                            key={"d" + obj.id + data.tei}>{dvMap[obj.dataElement.id]}</td>);
                         }
                     }
 
                     return _list;
-                },_list);
-                list.push([<tr >{_list}</tr>]);
+                }, _list);
+                list.push([<tr>{_list}</tr>]);
+
             }
+        }
             if(state.selectedName === "bb_complete")
             {
                 var doc_data = data.details;
@@ -224,50 +237,60 @@ export function ApprovalTable(props){
                 }
 
                 console.log(doc_data)
-
-                var obj = JSON.parse(doc_data);
-                for(var i=0;i<=3;i++){
-                    if(obj.data === undefined || !obj.data[i] )
-                    {
-                        if(state.selectedSpeciality === "Bm7Bc9Bnqoh" || state.selectedSpeciality === "Kd8DRRvZDro"){
-                            _list.push(<td colSpan="11"></td>  );
-                        }
-                        else{
-                            _list.push(<td colSpan="12"></td>  );
-                        }
-                    }
-                    else{
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].patient_name ? obj.data[i].patient_name : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].rch_id ? obj.data[i].rch_id : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].case_id ? obj.data[i].case_id : ""}</td>);
-                        if(state.selectedSpeciality === "Kd8DRRvZDro"){
-                            _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
-                        }
-                        else if(state.selectedSpeciality === "Bm7Bc9Bnqoh"){
-                            _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
-                        }
-                        else if(state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"){
-                            if(data.deid === constants.anaesthesia_detail)
+                    try{
+                        var obj = JSON.parse(doc_data);
+                        for(var i=0;i<=3;i++){
+                            if(obj.data === undefined || !obj.data[i] )
                             {
-                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
-                                _list.push(<td className="approval_wideX"  key="h_ou"></td>);
+                                if(state.selectedSpeciality === "Bm7Bc9Bnqoh" || state.selectedSpeciality === "Kd8DRRvZDro"){
+                                    _list.push(<td colSpan="15"></td>  );
+                                }
+                                else{
+                                    _list.push(<td colSpan="16"></td>  );
+                                }
                             }
-                            else if(data.deid === constants.csection_detail)
-                            {
-                                _list.push(<td className="approval_wideX"  key="h_ou"></td>);
-                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
+                            else{
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].patient_name ? obj.data[i].patient_name : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].rch_id ? obj.data[i].rch_id : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].case_id ? obj.data[i].case_id : ""}</td>);
+                                if(state.selectedSpeciality === "Kd8DRRvZDro"){
+                                    _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
+                                }
+                                else if(state.selectedSpeciality === "Bm7Bc9Bnqoh"){
+                                    _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
+                                }
+                                else if(state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh"){
+                                    if(data.deid === constants.anaesthesia_detail)
+                                    {
+                                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
+                                        _list.push(<td className="approval_wideX"  key="h_ou"></td>);
+                                    }
+                                    else if(data.deid === constants.csection_detail)
+                                    {
+                                        _list.push(<td className="approval_wideX"  key="h_ou"></td>);
+                                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].id ? obj.data[i].id:""}</td>);
+                                    }
+
+                                }
+
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].doc_id ? obj.data[i].doc_id : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].mbBsDoctor[0] ? obj.data[i].mbBsDoctor[0] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].mbBsDoctor[1] ? obj.data[i].mbBsDoctor[1] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].supportingStaff[0] ? obj.data[i].supportingStaff[0] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].supportingStaff[1] ? obj.data[i].supportingStaff[1] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].otTechnician[0] ? obj.data[i].otTechnician[0] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].otTechnician[1] ? obj.data[i].otTechnician[1] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].classStaff && obj.data[i].classStaff[0] ? obj.data[i].classStaff[0] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].classStaff && obj.data[i].classStaff[1] ? obj.data[i].classStaff[1] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].classStaff && obj.data[i].classStaff[2] ? obj.data[i].classStaff[2] : ""}</td>);
+                                _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].classStaff && obj.data[i].classStaff[3] ? obj.data[i].classStaff[3] : ""}</td>);
+
                             }
 
-                        }
 
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].doc_id ? obj.data[i].doc_id : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].mbBsDoctor[0] ? obj.data[i].mbBsDoctor[0] : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].mbBsDoctor[1] ? obj.data[i].mbBsDoctor[1] : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].supportingStaff[0] ? obj.data[i].supportingStaff[0] : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].supportingStaff[1] ? obj.data[i].supportingStaff[1] : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].otTechnician[0] ? obj.data[i].otTechnician[0] : ""}</td>);
-                        _list.push(<td className="approval_wideX"  key="h_ou">{obj.data[i].otTechnician[1] ? obj.data[i].otTechnician[1] : ""}</td>);
-                    }
+                }
+                }catch (e) {
+
                 }
 
                 list.push([<tr >{_list}</tr>]);
@@ -302,10 +325,10 @@ export function ApprovalTable(props){
             listcase.push(<th colSpan="9"></th>);
             for (var i = 0; i <= 3; i++) {
                 if(state.selectedSpeciality === "Bm7Bc9Bnqoh" || state.selectedSpeciality === "Kd8DRRvZDro"){
-                    listcase.push(<th colSpan="11">Case {(i + 1)}</th>);
+                    listcase.push(<th colSpan="15">Case {(i + 1)}</th>);
                 }
                 else{
-                    listcase.push(<th colSpan="12">Case {(i + 1)}</th>);
+                    listcase.push(<th colSpan="16">Case {(i + 1)}</th>);
                 }
             }
             state.headerLength = listcase.length;
@@ -330,7 +353,7 @@ export function ApprovalTable(props){
                     <thead>
 
                     <tr>
-                        <th colSpan={state.selectedName === "bb_complete"?56:(state.headerLength+4)}>{reportName}</th>
+                        <th colSpan={state.selectedName === "bb_complete"?74:(state.headerLength+4)}>{reportName}</th>
                     </tr>
                     {getCaseHeader()}
                     <tr>

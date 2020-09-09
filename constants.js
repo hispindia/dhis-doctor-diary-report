@@ -1,4 +1,5 @@
-exports.DHIS_URL_BASE = "https://uphmis.in/uphmis";
+//exports.DHIS_URL_BASE = "https://uphmis.in/uphmis";
+exports.DHIS_URL_BASE = "https://ln1.hispindia.org/uphmis230";
 exports.username = "admin";
 exports.password = "";
 
@@ -103,7 +104,10 @@ max(ou2.name)  as District,
 max(psi.executiondate)  as execution_date,
 max(case when tedv.dataelementid in (${deid}) then tedv.value end) as provided ,
 max(case when tedv.dataelementid = 84526242 then tedv.value end) as comment_if_any ,
-max(case when (tedv_1.dataelementid = 88199674) then tedv_1.value end) as Approval_Status, 
+max(case when (tedv_1.dataelementid = 88199674) then tedv_1.value end) as Approval_Status
+
+
+, 
 max(tedv.dataelementid) as deid,
 max(case when (tedv.dataelementid = 88199674 and tedv.value in ('Approved','Auto-Approved','Rejected')) then tedv.lastupdated end) as Approval_Date
 
