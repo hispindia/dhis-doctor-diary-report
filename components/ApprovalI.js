@@ -22,13 +22,18 @@ export function ApprovalI(props){
         selectedName : "-1",
         program : props.data.program,
         user : props.data.user,
+        usergroup1: props.data.usergroup1,
+        usergroup2:props.data.usergroup2,
         selectedOU : props.data.user.organisationUnits[0],
         orgUnitValidation : "",
         specialityValidation : "",
+        reportTypeValidation : "",
+        userValidation : "",
         ouMode : "DESCENDANTS",
         sdate : moment().subtract(1,'months').startOf('month').format("YYYY-MM-DD"),
         edate : moment().subtract(1,'months').endOf('month').format("YYYY-MM-DD"),
         selectedSpeciality : "-1",
+        seletedUserGroup : "-1",
         ous : []
     };
 
@@ -49,6 +54,12 @@ export function ApprovalI(props){
         state.rawData = null;
         instance.setState(state);
     }
+    function onGroupChange(e){
+        state.seletedUserGroup = e.target.value;
+        state.userValidation = "";
+        state.rawData = null;
+        instance.setState(state);
+    }
     function  onReportNameChange(e) {
 
         if(e.target.value === 'bb_date' || e.target.value === 'bb_complete')
@@ -62,6 +73,7 @@ export function ApprovalI(props){
             monthlyType = true;
         }
         state.selectedName = e.target.value;
+        state.reportTypeValidation = "";
         state.rawData = null;
         instance.setState(state);
     }
@@ -94,6 +106,13 @@ export function ApprovalI(props){
     }
 
     function validate(){
+
+        if(state.selectedName== '-1')
+        {
+            state.reportTypeValidation = "Please select Report Name"
+            instance.setState(state);
+            return false;
+        }
         if (state.selectedOU.id == undefined){
             state.orgUnitValidation = "Please select Facility from left bar"
             instance.setState(state);
@@ -107,6 +126,12 @@ export function ApprovalI(props){
         }
         if ((Date.parse(state.sdate) >= Date.parse(state.edate))) {
             alert("End date should be greater than Start date");
+            return false;
+        }
+        if(state.seletedUserGroup == '-1')
+        {
+            state.userValidation = "Please select Buddy Buddy Group"
+            instance.setState(state);
             return false;
         }
 
@@ -176,12 +201,6 @@ export function ApprovalI(props){
         }
 
         function makeQuery(){
-
-            console.log(state.selectedSpeciality);
-            console.log(state.selectedOU.id);
-            console.log(state.sdate);
-            console.log(state.edate);
-            console.log(state.selectedName);
 
             var rtVar = "";
             if(state.selectedName === "bb_complete")
@@ -254,7 +273,7 @@ export function ApprovalI(props){
             if(!(state.rawData)){
                 return (<div></div>)
             }
-            return (<ApprovalTable key="approvaltable"  rawData={state.rawData} month ={selectedMonth} selectedOU={state.selectedOU} sdate={state.sdate} edate={state.edate} program={state.program} user={state.user} selectedName ={state.selectedName}  selectedSpeciality={state.selectedSpeciality} ous={state.ous}  />
+            return (<ApprovalTable key="approvaltable"  rawData={state.rawData} month ={selectedMonth} selectedOU={state.selectedOU} sdate={state.sdate} edate={state.edate} program={state.program} user={state.user} selectedName ={state.selectedName}  selectedSpeciality={state.selectedSpeciality} ous={state.ous}  usergroup1={state.usergroup1} usergroup2={state.usergroup2} seletedUserGroup ={state.seletedUserGroup}/>
             );
 
         }
@@ -288,6 +307,16 @@ export function ApprovalI(props){
 
             return options;
         }
+        function getUserGroup(){
+
+            var options = [
+                <option disabled key="select_usergroup" value="-1"> -- Select -- </option>
+            ];
+            options.push(<option key = {state.usergroup1.id}  value={state.usergroup1.id} >{state.usergroup1.name}</option>);
+            options.push(<option key = {state.usergroup2.id}  value={state.usergroup2.id} >{state.usergroup2.name}</option>);
+            options.push(<option key = "all"  value="all" >Buddy Buddy All</option>);
+            return options;
+        }
 
         return (
             <div >
@@ -299,14 +328,24 @@ export function ApprovalI(props){
                     <tr>
                         <td>Select Report Name<span style={{"color":"red"}}> * </span> :
                             <select  value={state.selectedName} onChange={onReportNameChange} id="report_name">
-                                {getReportName()}</select><label  ><i></i></label>
+                                {getReportName()}</select><label  ><i>{state.reportTypeValidation}</i></label>
                         </td>
                         <td>Select Report Type<span style={{"color":"red"}}> * </span> :
                             <select  value={state.selectedSpeciality} onChange={onSpecialityChange} id="report">
-                                {getSpeciality()}</select><label key="specialityValidation" ></label>
+                                {getSpeciality()}</select>
+                            <label key="specialityValidation" ><i>{state.specialityValidation}</i></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>  Select Buddy-Buddy Group<span style={{"color":"red"}}> * </span> :
+
+                        <select value={state.seletedUserGroup} onChange={onGroupChange} id="userGroup">
+                            {getUserGroup()}</select>
+                            <label key="userValidation" ><i>{state.userValidation}</i></label>
                         </td>
                         <td>Selected Facility<span style={{"color":"red"}}> * </span>  :
-                            <input disabled  value={state.selectedOU.name}></input><label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label>
+                            <input disabled  value={state.selectedOU.name}></input>
+                            <label key="orgUnitValidation" ><i>{state.orgUnitValidation}</i></label>
                         </td>
                     </tr>
                     <tr>
@@ -327,6 +366,7 @@ export function ApprovalI(props){
                                 <option value='12'>DEC</option>
                             </select>
                         </td>
+                        <td></td>
                     </tr>
 
                     <tr className={!dailyType?'hidden':'show'}>
@@ -338,6 +378,7 @@ export function ApprovalI(props){
                             <input type="date" value={state.edate} onChange = {onEndDateChange} ></input>
                         </td>
                     </tr>
+
                     <tr>
                         <td>  <input type="submit" value="Generate" onClick={getData} ></input></td>
                         <td> <img style = {state.loading?{"display":"inline"} : {"display" : "none"}} src="./images/loader-circle.GIF" alt="loader.." height="32" width="32"></img>  </td>

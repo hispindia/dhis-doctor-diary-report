@@ -17,13 +17,17 @@ export function ApprovalTable(props){
         user : props.user,
         program : props.program,
         rawData:props.rawData,
+        usergroup1 : props.usergroup1,
+        usergroup2 : props.usergroup2,
         sdate : props.sdate,
         edate:props.edate,
         selectedOU:props.selectedOU,
         selectedName:props.selectedName,
         selectedSpeciality : props.selectedSpeciality,
+        seletedUserGroup: props.seletedUserGroup,
         ous : props.ous,
-        headerLength : 10
+        headerLength : 10,
+        dataO: []
     };
     state.rawData.reduce(function(list,data,index) {
         if (state.selectedName === "bb_complete") {
@@ -33,6 +37,48 @@ export function ApprovalTable(props){
         }
         return data;
     })
+    var dataList = [];
+    state.dataO = state.rawData.reduce(function(list,data){
+        var nameObj ='';
+
+        if(state.selectedName === "bb_complete" || state.selectedName === "bb_date"){
+            nameObj = data.ehrmsid;
+        }
+        else if(state.selectedName === "bb_month")
+        {
+            nameObj = data.attrlist.reduce(function(str,obj){
+                if(obj.split(":")[0] === 'T6eQvMXe3MO')
+                {
+                    str = obj.split(":")[1];
+                }
+                return str;
+            },'');
+        }
+
+        if((state.selectedSpeciality === 'Kd8DRRvZDro' && state.seletedUserGroup == 'all') ||
+            (state.selectedSpeciality === 'Bm7Bc9Bnqoh' && state.seletedUserGroup == 'all') ||
+            (state.selectedSpeciality === "Kd8DRRvZDro','Bm7Bc9Bnqoh" && state.seletedUserGroup == 'all')
+        ){
+            dataList.push(data);
+        }
+        else {
+            if(state.seletedUserGroup === state.usergroup1.id) {
+                state.usergroup1.users.forEach(function (user) {
+                    if(nameObj === user.userCredentials.username){
+                        dataList.push(data);
+                    }
+                });
+            }
+            else if(state.seletedUserGroup === state.usergroup2.id) {
+                state.usergroup2.users.forEach(function (user) {
+                    if(nameObj === user.userCredentials.username){
+                        dataList.push(data);
+                    }
+                });
+            }
+        }
+        return dataList;
+    },[]);
     var programStageMap = state.program.programStages.reduce(function(map,obj){
         map[obj.id] = obj;
         return map;
@@ -47,6 +93,16 @@ export function ApprovalTable(props){
     var selectedStage;
     var reportName = "";
     console.log(state.selectedSpeciality);
+    var groupName = "";
+    if(state.seletedUserGroup === state.usergroup1){
+        groupName = "of Buddy-Buddy Group 1";
+    }
+    else if(state.seletedUserGroup === state.usergroup2){
+        groupName = "of Buddy-Buddy Group 2";
+    }
+    else if(state.seletedUserGroup === 'all'){
+        groupName = "of all Buddy-Buddy Group";
+    }
     if(state.selectedName === "bb_complete") {
         reportName = "Buddy-Buddy Complete Report (Last 12 months)";
     }
@@ -65,7 +121,7 @@ export function ApprovalTable(props){
         selectedStage = programStageMap[state.selectedSpeciality];
         reportName = reportName+" ("+selectedStage.name+")";
     }
-
+        reportName = reportName + groupName;
 
 
     instance.render = render;
@@ -157,7 +213,7 @@ export function ApprovalTable(props){
 
     function getRows(){
 
-        return state.rawData.reduce(function(list,data,index) {
+        return state.dataO.reduce(function(list,data,index) {
 
             console.log(state.selectedName);
             var date_month = new Date(data.execution_date);
