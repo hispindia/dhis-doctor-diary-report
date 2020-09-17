@@ -10,10 +10,6 @@
   "name": "Doc Diary Reports",
   "version": "1.0.0",
   "description": "",
-  "developer": {
-    "name": "harsh",
-    "email": "harsh.atal@gmail.com"
-  },
   "icons": {
   "16":"images/ddreport.png",
   "48":"images/ddreport.png",

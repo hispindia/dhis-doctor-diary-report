@@ -1,4 +1,6 @@
-exports.DHIS_URL_BASE = "https://uphmis.in/uphmis";
+//exports.DHIS_URL_BASE = "https://uphmis.in/uphmis";
+exports.DHIS_URL_BASE = "https://ln1.hispindia.org/uphmis230";
+//exports.DHIS_URL_BASE = "http://localhost:8080/dhis";
 exports.username = "admin";
 exports.password = "";
 
@@ -8,43 +10,43 @@ exports.attr_user = "fXG73s6W4ER";
 
 
 exports.views = {
-    login : "login",
-    calendar : "calendar",
-    entry : "entry",
-    loading : "loader",
+    login: "login",
+    calendar: "calendar",
+    entry: "entry",
+    loading: "loader",
     settings: "settings"
 };
 
 exports.approval_status = {
 
-    approved : "Approved",
-    autoapproved : "Auto-Approved",
-    rejected : "Rejected",
-    resubmitted : "Re-submitted",
-    pending2 : "Pending2",
-    pending1 : "Pending1"
-    
+    approved: "Approved",
+    autoapproved: "Auto-Approved",
+    rejected: "Rejected",
+    resubmitted: "Re-submitted",
+    pending2: "Pending2",
+    pending1: "Pending1"
+
 }
 
-exports.approval_usergroup_level2_code="approval2ndlevel";
-exports.approval_usergroup_level1_code="approval1stlevel";
+exports.approval_usergroup_level2_code = "approval2ndlevel";
+exports.approval_usergroup_level1_code = "approval1stlevel";
 
 exports.report_types = {
 
     approved: "approved",
-    pending:"pending",
-    rejected : "rejected"
+    pending: "pending",
+    rejected: "rejected"
 }
 
 exports.approval_status_de = "W3RxC0UOsGY";
 exports.approval_rejection_reason_de = "CCNnr8s3rgE";
 
 exports.attr_releiving_date = "mE6SY3ro53v";
-exports.query_ddReport = function(ps,ou,sdate,edate){
+exports.query_ddReport = function (ps, ou, sdate, edate) {
 
     return `
             
-select 
+select
 pi.trackedentityinstanceid,
 max(psiou.uid) as psiouuid,
 max(ou.uid) as ouuid,
@@ -60,10 +62,10 @@ left join (
 	from programstageinstance psi
 	inner join programinstance pi on pi.programinstanceid = psi.programinstanceid
 	inner join trackedentitydatavalue tedv on tedv.programstageinstanceid = psi.programstageinstanceid
-	inner join dataelement de on de.dataelementid = tedv.dataelementid
+	inner join dataelement de on de.dataelementid = tedv.dataelementid	
 	inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.trackedentityinstanceid
 	where tedv.value ~ '^-?[0-9]+.?[0-9]*$' and tedv.value !='0'
-	and de.valuetype = 'NUMBER'
+	and de.valuetype = 'NUMBER'  
 	and psi.executiondate between '${sdate}' and '${edate}'
 	and psi.programstageid in (select programstageid 
 								from programstage 
@@ -73,19 +75,19 @@ left join (
 									where path like '%${ou}%')
 	group by pi.trackedentityinstanceid,de.uid,tei.organisationunitid
 	
-	union
-	select tei.organisationunitid,pi.trackedentityinstanceid as tei,
-tedv.value,count(tedv.value)
+	UNION
+	select tei.organisationunitid,pi.trackedentityinstanceid as tei,    
+    tedv.value,count(tedv.value)
 	from programstageinstance psi
 	inner join programinstance pi on pi.programinstanceid = psi.programinstanceid
-	inner join trackedentitydatavalue tedv on tedv.programstageinstanceid = psi.programstageinstanceid
-	inner join dataelement de on de.dataelementid = tedv.dataelementid
+	inner join trackedentitydatavalue tedv on tedv.programstageinstanceid = psi.programstageinstanceid	
+	inner join dataelement de on de.dataelementid = tedv.dataelementid		
 	inner join trackedentityinstance tei on tei.trackedentityinstanceid = pi.trackedentityinstanceid
 	and psi.executiondate between '${sdate}' and '${edate}'
-	and de.uid in ('x2uDVEGfY4K')
+	and de.uid in ('x2uDVEGfY4K','W3RxC0UOsGY')
 	and psi.programstageid in (select programstageid 
 								from programstage 
-								where uid = '${ps}')
+								where uid = '${ps}')							
 	and tei.organisationunitid in (select organisationunitid 
 									from organisationunit 
 									where path like '%${ou}%')
@@ -124,8 +126,6 @@ and pi.organisationunitid in (select organisationunitid
 				where path like '%${ou}%')
 group by pi.trackedentityinstanceid,division.organisationunitid,district.organisationunitid,block.organisationunitid,ou.name
 order by division.name,district.name,block.name,ou.name
-
-
 `
 
 }
@@ -144,7 +144,7 @@ exports.required_fields = [
     'x2uDVEGfY4K'
 ]
 
-exports.query_jsonize = function(q){
+exports.query_jsonize = function (q) {
     return `select json_agg(main.*) from (
             ${q}
             

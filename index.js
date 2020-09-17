@@ -7,7 +7,7 @@ import api from 'dhis2api';
 import constants from './constants'
 
 window.onload = function(){
-/* Menu Bar */
+    /* Menu Bar */
     try {
         if ('Dhis2HeaderBar' in window) {
             Dhis2HeaderBar.initHeaderBar(document.querySelector('#header'), '../../../api', { noLoadingIndicator: true });
@@ -17,8 +17,8 @@ window.onload = function(){
             console.error(e);
         }
     }
-    
-/********/
+
+    /********/
 
 
     var org;
@@ -27,22 +27,26 @@ window.onload = function(){
 
         debugger
     }
-      
+
     ReactDOM.render(<TreeComponent  previousSelected={0} onSelectCallback={select} loading={0}/>, document.getElementById('treeComponent'));
 
 
     var apiWrapper = new api.wrapper();
-    
+
     var Pprogram = apiWrapper.getObj(`programs\\${constants.program_doc_diary}?fields=id,name,programStages[id,name,description,programStageDataElements[id,name,sortOrder,displayInReports,dataElement[id,name,formName,displayName,valueType,shortname,optionSet[id,name,code,options[id,name,code]]]]]`)
     var Pme = apiWrapper.getObj(`me.json?fields=id,name,displayName,organisationUnits[id,name],userGroups[id,name,code]`);
-    
-    
-    Promise.all([Pprogram,Pme]).then(function(values){
+
+    var Ug1 = apiWrapper.getObj(`userGroups/FLOORZAKSJA?fields=id,name,displayName,users[userCredentials[username]]`);
+    var Ug2 = apiWrapper.getObj(`userGroups/UzSe2d0oMH1?fields=id,name,displayName,users[userCredentials[username]]`);
+
+    Promise.all([Pprogram,Pme,Ug1,Ug2]).then(function(values){
         org = values[1].organisationUnits[0]
         ReactDOM.render(<ApprovalI data ={
             {
                 program : values[0],
-                user : values[1]
+                user : values[1],
+                usergroup1: values[2],
+                usergroup2: values[3]
             }
         }  services = {
             {
@@ -52,7 +56,7 @@ window.onload = function(){
         }/>, document.getElementById('form'));
 
     }).catch(reason => {
-//        console.log(reason);
+        console.log(reason);
         // TODO
         ReactDOM.render(<div>No reports exist.</div>,document.getElementById('form'))
     });
